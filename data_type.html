@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h2>JavaScript</h2>
+
+    <p>different type of dyta </p>
+
+    <p id="demo"></p>
+
+    <script>
+        let int = 16 ;
+        let str = "Farahi" ;
+        let boolean = true ;
+        const my_obj = {first_name : "farided", last_name : "farahi" } ;
+        const my_arry = ["black", "white","red", "yellow" ];
+        const date = new Date();
+        document.getElementById("demo").innerHTML =
+         `<div>
+            <div>${int}</div>
+            <div>${str}</div>
+            <div>${boolean}</div>
+            <div>${my_obj.first_name}</div>
+            <div>${my_arry}</div>
+            <div>${date}</div>
+            <div>`;
+    </script>
+
+</body>
+</html>

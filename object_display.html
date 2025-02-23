@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Object Methods</h2>
+    <p id="demo"></p>
+    <script>
+        const person = {
+            first_name : "farideh",
+            last_name : "farahi",
+            age : 24,
+            eyeColor : "black",
+            city:"Tehran",
+        };
+        let text = "";
+        for (let x in person){
+            text+= person[x] + " "
+        }
+        document.getElementById("demo").innerHTML = text;
+    </script>
+</body>
+</html>

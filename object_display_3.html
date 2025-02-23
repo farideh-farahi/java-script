@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Object Methods</h2>
+    <p id="demo"></p>
+    <script>
+        const fruits = {Bananas:300, Oranges:200, Apples:500};
+        let text = "";
+        for (let[fruit,value]of Object.entries(fruits)){
+            text += fruit + ": " + value + "<br>";
+        }
+        document.getElementById("demo").innerHTML = text;
+    </script>
+</body>
+</html>
