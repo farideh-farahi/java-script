@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>you can remove or add Object</h1>
+    <P id="test"></P>
+
+    <script>
+        const person_1 = {
+            first_name : "Ali",
+            last_name : "Fatahi",
+            age : 25
+        };
+        const person_2 = {
+            first_name : "Fateme",
+            last_name : "zodfekr",
+            age : 28
+        };
+        const person_3 = {
+            first_name : "sadra",
+            last_name : "yosefi",
+            age : 14
+        };
+        const defaultPerson = {
+            first_name : "New",
+            last_name : "New last name",
+            age : 33
+        };
+
+        const people = [person_1, person_2, person_3];
+
+        document.getElementById("test").innerHTML = JSON.stringify(people);
+
+        
+        function addPerson(){
+            people.push(defaultPerson);
+            document.getElementById("test").innerHTML = JSON.stringify(people);
+        };
+
+        function removePerson(){
+            if (people.length === 0) {
+                alert("There is no object here");
+                return;
+            }
+            people.pop();
+            document.getElementById("test").innerHTML = JSON.stringify(people);
+        }; 
+    </script>
+
+    <button type="button" onclick="addPerson()">ADD</button>,
+    <button type="button" onclick="removePerson()">REMOVE</button>,
+
+</body>
+</html>
