@@ -1,40 +1,99 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <h1>you can remove or add Object</h1>
+    <h1>you can remove or add person</h1>
     <P id="test"></P>
+    
+    <input type="text" id="full_name" placeholder="Full Name">
+    <input type="number" id="age" placeholder="Age">
+    <input type="email" id="email" placeholder="Email">
+    <input type="tel" id="phone_number" placeholder="Phone">
+
+    <button type="button" onclick="addPerson()">ADD</button>
+    <button type="button" onclick="removePerson()">REMOVE</button>
 
     <script>
-        const person_1 = {
-            first_name : "Ali",
-            last_name : "Fatahi",
-            age : 25
-        };
-        const person_2 = {
-            first_name : "Fateme",
-            last_name : "zodfekr",
-            age : 28
-        };
-        const person_3 = {
-            first_name : "sadra",
-            last_name : "yosefi",
-            age : 14
-        };
-        const defaultPerson = {
-            first_name : "New",
-            last_name : "New last name",
-            age : 33
+        // Default person
+        const example = {
+            fullName : "Ali Fatahi",
+            age : 25,
+            email : "test@gmail.com",
+            phoneNumber : "09155555487",
         };
 
-        const people = [person_1, person_2, person_3];
+        const people = [example];
 
-        document.getElementById("test").innerHTML = JSON.stringify(people);
+        function printView(id) {
+            document.getElementById("test").innerHTML = JSON.stringify(people, null, 10);
+        }
 
+        printView("test")
+
+        function getInputValues() {
+            const inputs = ["full_name", "age", "email", "phone_number"];
+            const values = {};
+
+            inputs.forEach(id => {
+                values[id] = document.getElementById(id).value;
+            });
+
+            return {
+                fullName: values.full_name,
+                age: parseInt(values.age),
+                email: values.email,
+                phoneNumber: values.phone_number,
+        };
+    }
+        // Clear input fields
+        function clearInputValues() {
+            const inputs = ["full_name", "age", "email", "phone_number"];
         
-        function addPerson(){
-            people.push(defaultPerson);
-            document.getElementById("test").innerHTML = JSON.stringify(people);
+            inputs.forEach(id => {
+                document.getElementById(id).value = '';
+            });
+        }
+
+        // Validate input values
+        function validateInput(values) {
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const phonePattern = /^(\+98|0)?9\d{9}$/;
+            const validations = {
+                email : emailPattern,
+                phoneNumber :phonePattern
+            };
+
+            for (const key in validations) {
+                if(!validations[key].test(values[key])) {
+                    return `Invalid ${key}`;
+                }
+            }
+            return "valid";
+        }
+
+        function addPerson() {
+            const { fullName, age, email, phoneNumber } = getInputValues();
+
+            if (!fullName || !age || !email || !phoneNumber ){
+                alert("Please fill out all fields.");
+                return;
+            }
+            const validationMessage = validateInput({email, phoneNumber});
+            if (validationMessage !== "valid") {
+                alert(validationMessage);
+                return;
+            }
+            
+            const newPerson = {
+            fullName,
+            age,
+            email,
+            phoneNumber,
         };
+
+            people.push(newPerson);
+            printView("test");          
+            clearInputValues();
+    }
 
         function removePerson(){
             if (people.length === 0) {
@@ -42,12 +101,9 @@
                 return;
             }
             people.pop();
-            document.getElementById("test").innerHTML = JSON.stringify(people);
+            printView("test")
         }; 
     </script>
-
-    <button type="button" onclick="addPerson()">ADD</button>,
-    <button type="button" onclick="removePerson()">REMOVE</button>,
 
 </body>
 </html>
