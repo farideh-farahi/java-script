@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<h1>The Window Object</h1>
+<h2>The setTimeout() and clearTimeout() Methods</h2>
+<button onclick = "startCounting()" >start counting</button>
+<input type="text" id="demo">
+<button onclick = "finishCounting()">finish counting</button>
+<p>Click on "Start count!" to start the timer. The input field will count forever, starting at 0.</p>
+
+<p>Click on "Stop count!" to stop counting. Click on "Start count!" to start the timer again.</p>
+<body>
+
+<script>
+    let counter = 0;
+    let timeout;
+    let timer_on = 0;
+
+    function timedCont() {
+        document.getElementById("demo").value = counter;
+        counter++;
+        timeout = setTimeout(timedCont, 1000);
+    };
+
+    function startCounting() {
+        if (!timer_on){
+            timer_on = 1;
+            timedCont();
+        }
+
+    };
+    function finishCounting() {
+        clearTimeout(timeout);
+        timer_on = 0;
+    };
+</script>
+</body>
+
+</html>
