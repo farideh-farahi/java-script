@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>JavaScript Functions</h1>
+<h2>Callback Functions</h2>
+
+<p>The result of the calculation is:</p>
+<p id="demo"></p>
+
+<script>
+    function showFunction(something){
+        document.getElementById("demo").innerHTML = something;
+    };
+
+    function calculation(num1, num2, mycallback) {
+        let test = num2 / num1;
+        mycallback(test);
+    };
+    calculation(20, 2, showFunction)
+</script>
+</body>
+</html>
