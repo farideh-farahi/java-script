@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const app = express();
 
-const helmet = require('helmet');
+const helmet = require('./.gitignore/node_modules/helmet/index.d.cts');
 app.use(helmet());
 app.use(
     helmet({
