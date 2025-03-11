@@ -9,7 +9,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "ejs": "^3.1.10",
     "express": "^4.21.2",
-    "helmet": "^8.0.0"
+    "hbs": "^4.2.0",
+    "helmet": "^8.0.0",
+    "pug": "^3.0.3",
+    "serve-favicon": "^2.5.0"
   }
 }
