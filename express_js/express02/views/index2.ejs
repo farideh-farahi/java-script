@@ -1,0 +1,16 @@
+<% for (let i=0; i<10 ; i++){ %>
+    <li><%= i %></li>
+<% } %>
+
+<% for (let i=0; i<10 ; i++){ %>
+    <% if (i%2 === 0){text = "even" %>
+    <% }else{ text = "odd"} %>
+    <li><%= i%> - <%=text %></li>
+<% } %>
+
+
+<script>
+    for (let i = 0; i<5 ; i++) {
+        document.write(`<li> hi </li>`);
+    }
+</script>
