@@ -34,6 +34,14 @@ app.use((req, res, next) => {
     }
     next()
 })
+app.param('id', (req, res, next, id) => {
+    console.log("param called :",id);
+    next();
+})
+
+app.get('/story/:id',(req, res, next) => {
+    res.send(`<h1>this is story number ${req.params.id}</h1>`)
+})
 
 app.get('/',(req, res, next)=>{
     res.send('Sanity check')
