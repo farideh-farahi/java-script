@@ -6,6 +6,7 @@ const app = express();
 const cookieParser = require('cookie-parser');
 
 const helmet = require('helmet');
+const { error } = require('console');
 
 app.use(helmet());
 app.use(
@@ -67,6 +68,16 @@ app.get('/welcome',(req, res, next) => {
         username : req.cookies.username
     })
 });
+
+app.get('/statement', (req, res, next) => {
+    res.download(path.join(__dirname, '/userStatements/BankStatementChequing.png'), 'newName', () =>{
+        if (error){
+            if(!res.headersSent){
+                res.redirect('/download/error')
+            }
+        }
+    })
+})
 
 app.get('/logout',(req, res, next) => {
     res.clearCookie('username')
