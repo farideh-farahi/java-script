@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie App</title>
+      <%- include('head') %>
+
+</head>
+<body ng-controller="myController">
+    <%- include ('navbar') %> <!-- This will include your navigation bar content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1></h1> <!-- Placeholder for a heading -->
+            </div>
+            <div class="col-sm-12">
+                <!-- we have an array! Called parsedData -->
+                <% parsedData.forEach((movie) => { %>
+                  <div class="col-md-3 col-sm-4 poster">
+                    <a href="/movie/<%=movie.id%>"><img src="<%= imageBaseUrl + movie.poster_path %>" alt="<%= movie.title %>"></a>>
+                  </div>
+                <% }) %>
+              </div>
+              
+        </div>
+    </div>
+</body>
+</html>
