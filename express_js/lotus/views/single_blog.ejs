@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog List</title>
+    <link rel="stylesheet" href="/stylesindex.css">
+</head>
+<body>
+
+<!-- 🔹 هدر و خوش‌آمدگویی -->
+<header class="site-header">
+    <h1>Welcome to Your Blog</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/auth/login">Login</a></li>
+            <li><a href="/auth/register">Register</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="blog-container">
+    <h1><%= blog.title %></h1>
+    <p><%= blog.content %></p>
+    <p><small>Written by: <%= blog.author %></small></p>
+</div>
+
+</body>
+</html>

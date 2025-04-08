@@ -1,0 +1,141 @@
+/* 🔹 تنظیم هدر */
+.site-header {
+  background: linear-gradient(45deg, #0077cc, #005599);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔹 خوش‌آمدگویی */
+.site-header h1 {
+  font-size: 26px;
+  margin: 0;
+  font-weight: bold;
+}
+
+/* 🔹 تنظیم منوی ناوبری */
+.site-header nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+}
+
+.site-header nav ul li {
+  margin: 0 15px;
+}
+
+.site-header nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 8px 12px;
+  transition: 0.3s;
+  border-radius: 5px;
+}
+
+.site-header nav ul li a:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 🔹 تنظیم لیست بلاگ‌ها داخل هدر */
+.blog-list-header {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.blog-list-header ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+}
+
+.blog-list-header ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.blog-list-header ul li a:hover {
+  text-decoration: underline;
+}
+
+/* 🔹 تنظیم کارت‌های بلاگ */
+.blog-card {
+  background: white;
+  padding: 20px;
+  margin: 15px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  transition: transform 0.3s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+}
+
+/* 🔹 عنوان بلاگ */
+.blog-card h2 {
+  font-size: 22px;
+  color: #0077cc;
+  margin-bottom: 10px;
+}
+
+/* 🔹 متن کوتاه بلاگ */
+.blog-card p {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 🔹 لینک "Read More" */
+.blog-card a {
+  display: block;
+  text-align: right;
+  color: #0077cc;
+  font-weight: bold;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.blog-card a:hover {
+  text-decoration: underline;
+}
+
+/* 🔹 دکمه‌ی لایک */
+.like-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  transition: 0.3s;
+}
+
+.like-button:hover {
+  color: red;
+}
+.create-post-container {
+  text-align: center;
+  margin-top: 50px; /* Adjust as needed */
+}
+
+.create-post-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff; /* Change to your preferred color */
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.create-post-btn:hover {
+  background-color: #0056b3;
+}

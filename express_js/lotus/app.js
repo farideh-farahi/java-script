@@ -4,19 +4,21 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const pool = require('./database/db')
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-var app = express();
-app.get('/test-db', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW()');
-    res.json({ message: "Database connected!", time: result.rows[0].now });
-  } catch (err) {
-    res.status(500).json({ error: "Database connection failed!", details: err.message });
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) {
+      console.error("Database connection error:", err);
+  } else {
+      console.log("Database connected:", res.rows[0]);
   }
 });
+
+
+var indexRouter = require('./routes/index');
+var authRouter = require('./routes/auth');
+var blogRouter = require('./routes/single_blog')
+var newPostRouter = require('./routes/new_post')
+
+var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,12 +26,25 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const session = require('express-session');
+
+app.use(session({
+    secret: "secret_key",
+    resave: false,
+    saveUninitialized: false
+}));
+
+
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authRouter);
+app.use('/',blogRouter)
+app.use('/new-post',newPostRouter)
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

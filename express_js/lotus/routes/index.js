@@ -1,9 +1,16 @@
-var express = require('express');
-var router = express.Router();
+const express = require("express");
+const pool = require("../database/db");
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const router = express.Router();
 
-module.exports = router;
+router.get('/', async(req, res) => {
+  try{
+    const blogs = await pool.query('SELECT * FROM blogs ORDER BY ID DESC');
+    res.render("index", {blogs : blogs.rows})
+
+  }catch(err){
+    res.status(500).send("Error retrieving blogs");
+  }
+})
+
+module.exports = router
