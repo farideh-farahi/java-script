@@ -50,6 +50,7 @@ router.post('/register', async(req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const token = crypto.randomBytes(32).toString("hex");
+        
 
         const newUser = await pool.query(
             'INSERT INTO users (username, email, password, token) VALUES ($1, $2, $3, $4) RETURNING *',

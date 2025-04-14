@@ -14,13 +14,20 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-var authRouter = require('./routes/auth');
-var blogRouter = require('./routes/blogs');
-var blogDetailsRouter = require('./routes/blog_details');
-
-
 
 var app = express();
+
+app.use((req, res, next) => {
+  const token = req.headers["authorization"];
+  console.log(token)
+  if (!token){
+    return res.status(401).json({success: false, msg :"No token provide"})
+  }
+  return res.json({success: true, msg :"Token is accepted"})
+
+  req.userToken = token;
+  next();
+})
 
 // Middleware setup
 app.use(logger('dev'));
@@ -28,6 +35,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var authRouter = require('./routes/auth');
+var blogRouter = require('./routes/blogs');
+var blogDetailsRouter = require('./routes/blog_details');
 
 
 // Routes
