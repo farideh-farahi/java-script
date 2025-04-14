@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const pool = require('./database/db');
 
+var app = express();
+
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
@@ -14,20 +16,20 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-
-var app = express();
-
 app.use((req, res, next) => {
   const token = req.headers["authorization"];
-  console.log(token)
-  if (!token){
-    return res.status(401).json({success: false, msg :"No token provide"})
-  }
-  return res.json({success: true, msg :"Token is accepted"})
+  console.log("Received Token:", token);
 
-  req.userToken = token;
-  next();
-})
+  if (!token) {
+    // Respond with 401 Unauthorized if token is missing
+    return res.status(401).json({ success: false, msg: "No token provided" });
+  }
+
+  req.userToken = token; // Attach the token to the request object for downstream use
+  console.log("Token is accepted"); // Log token acceptance
+
+  next(); // Pass control to the next middleware or route
+});
 
 // Middleware setup
 app.use(logger('dev'));
