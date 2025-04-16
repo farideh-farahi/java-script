@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
 
         const isValid = await bcrypt.compare(password, user.rows[0].password);
         if (!isValid) return res.status(401).json({ success: false, msg: "Invalid Password" });
-
+        await pool.query('UPDATE users SET is_logged_in = $1 WHERE id = $2', [true, user.rows[0].id])
         return res.json({ success: true, msg: "Login successful", token: user.rows[0].token});
     } catch (err) {
 
@@ -53,6 +53,23 @@ router.post('/register', async(req, res) => {
     } catch (error) {
         console.error("Error inserting user:", error);
         res.status(500).json({ success: false, msg: "Server error", error: error.message });
+    }
+});
+
+//LOGOUT ROUTE
+
+router.post('/logout', validateToken, async (req, res) => {
+    try {
+        const user_id = req.user.id;
+        const user_token = req.user.token;
+
+        if (!req.user.is_logged_in) {
+            return res.json({ success:true , msg: "you are alradey logout"})
+        }
+        await pool.query('UPDATE users SET is_logged_in = $1 WHERE id = $2', [false , user_id]); // Replace NULL with ''
+        return res.json({ success: true, msg: 'Successfully logged out!' });
+    } catch (err) {
+        res.status(500).json({ success: false, msg: "Server error", error: err.message });
     }
 });
 

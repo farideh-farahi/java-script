@@ -22,22 +22,16 @@ router.get('/',validateToken, async(req, res) => {
 //Sending new blog
 router.post('/',validateToken, async(req, res)=> {
   console.log("Present token  :", req.userToken);
-  const { title, content , token} = req.body;
+  const { title, content } = req.body;
   if (!title || !content ) {
       return res.status(400).json({success:false, msg: "Missing required fields!"});
   }
   try {
-    const user = await pool.query('SELECT * FROM users WHERE token=$1', [token]);
-
-    if (user.rows.length === 0) return res.status(401).json({ success: false, msg: "Invalid token" });
-
-    const user_id = user.rows[0].id;
-
+    const user_id = req.user.id;
     const newBlog = await pool.query(
         "INSERT INTO blogs (title, content,user_id) VALUES ($1, $2, $3) RETURNING *",
         [title, content, user_id]
     );
-    console.log("New blog added:", newBlog.rows[0]);
     res.json({success: true, msg: "Blog created successfully", blog: newBlog.rows[0] })
 } catch (err) {
     console.error("Database error:", err.message);
