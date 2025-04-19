@@ -21,7 +21,6 @@ router.get('/',validateToken, async(req, res) => {
 
 //Sending new blog
 router.post('/',validateToken, async(req, res)=> {
-  console.log("Present token  :", req.userToken);
   const { title, content } = req.body;
   if (!title || !content ) {
       return res.status(400).json({success:false, msg: "Missing required fields!"});
