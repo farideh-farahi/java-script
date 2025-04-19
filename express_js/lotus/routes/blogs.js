@@ -4,9 +4,9 @@ const validateToken = require("../middleware/authmiddleware");
 const router = express.Router();
 
 router.get('/',validateToken, async(req, res) => {
-
+  const user_id = req.user.id 
   try{
-    const blogs = await pool.query('SELECT * FROM blogs ORDER BY ID DESC');
+    const blogs = await pool.query('SELECT * FROM blogs WHERE user_id = $1 ORDER BY ID DESC', [user_id]);
     if (blogs.rows.length ===0) {
       return res.status(200).json({success: true, msg: "No blogs found"})
     }
