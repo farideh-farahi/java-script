@@ -15,7 +15,6 @@ router.post('/login',async (req, res) => {
 
     try {
         const user = await pool.query('SELECT * FROM users WHERE username=$1', [username]);
-
         if (user.rows.length === 0) return res.status(404).json({ success: false, msg: "User Not Found" });
 
         const isValid = await bcrypt.compare(password, user.rows[0].password);
@@ -24,8 +23,8 @@ router.post('/login',async (req, res) => {
         const token = generateToken();
         await pool.query('UPDATE users SET token = $1 WHERE id = $2', [token , user.rows[0].id])
         return res.json({ success: true, msg: "Login successful", token});
-    } catch (err) {
 
+    } catch (err) {
         res.status(500).json({ success: false, msg: "Server error", error: err.message });
     }
 });
@@ -37,6 +36,7 @@ router.post('/register', async(req, res) => {
     if (!username || !email || !password) {
         return res.status(400).json({ success: false, msg: "All fields are required!" });
     }
+
     const emailValidation = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailValidation.test(email)) {
         return res.status(400).json({ success: false, msg: "Invalid email format!" });
@@ -45,7 +45,7 @@ router.post('/register', async(req, res) => {
     try {
         const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username]);
         if (existingUser.rows.length > 0) {
-            return res.status(400).json({ success: false, msg: "Username already exists, please choose another one." });
+            return res.status(400).json({ success: false, msg: "Username already exist" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -57,21 +57,19 @@ router.post('/register', async(req, res) => {
         return res.json({ success: true, msg: "You signed up successfully!" });
 
     } catch (err) {
-        console.error("Error inserting user:", error);
         res.status(500).json({ success: false, msg: "Server error", error: err.message });
     }
 });
 
 //LOGOUT ROUTE
-
 router.post('/logout', validateToken, async (req, res) => {
     try {
         const user_id = req.user.id;
-
         if (!req.user.token) {
             return res.json({ success:true , msg: "you are alradey logout"})
         }
-        await pool.query('UPDATE users SET token = NULL WHERE id = $1', [user_id]); // Replace NULL with ''
+
+        await pool.query('UPDATE users SET token = NULL WHERE id = $1', [user_id]);
         return res.json({ success: true, msg: 'Successfully logged out!' });
     } catch (err) {
         res.status(500).json({ success: false, msg: "Server error", error: err.message });
