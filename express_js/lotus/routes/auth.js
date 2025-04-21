@@ -1,9 +1,7 @@
-const express = require("express");
-const pool = require("../database/db");
+const { User } = require("../database/models")
 const bcrypt = require("bcrypt");
 const validateToken = require("../middleware/authmiddleware");
-const {generateToken} = require("../utils/tokenHelper")
-const router = express.Router();
+const {generateToken} = require("../utils/tokenHelper");
 
 // LOGIN ROUTE
 router.post('/login',async (req, res) => {
@@ -14,18 +12,21 @@ router.post('/login',async (req, res) => {
     }
 
     try {
-        const user = await pool.query('SELECT * FROM users WHERE username=$1', [username]);
-        if (user.rows.length === 0) return res.status(404).json({ success: false, msg: "User Not Found" });
+        const user = await User.findOne({ where : { username }})
+        if (!user) return res.status(404).json({ success: false, msg: "User Not Found" });
 
-        const isValid = await bcrypt.compare(password, user.rows[0].password);
+        const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) return res.status(401).json({ success: false, msg: "Invalid Password" });
 
         const token = generateToken();
-        await pool.query('UPDATE users SET token = $1 WHERE id = $2', [token , user.rows[0].id])
+        await user.update({ token })
         return res.json({ success: true, msg: "Login successful", token});
 
     } catch (err) {
-        res.status(500).json({ success: false, msg: "Server error", error: err.message });
+        res.status(500).json({
+            success: false,
+            msg: "Server error during login",
+            error: err.message });
     }
 });
 
@@ -43,17 +44,13 @@ router.post('/register', async(req, res) => {
     }
 
     try {
-        const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username]);
-        if (existingUser.rows.length > 0) {
-            return res.status(400).json({ success: false, msg: "Username already exist" });
+        const existingUserCheck = await User.findOne({ where: {username} });
+        if (existingUserCheck) {
+            return res.status(400).json({ success: false, msg: "Username already exists" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await pool.query(
-            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-            [username, email, hashedPassword]
-        );
-
+        await User.create({username, email, password: hashedPassword})
         return res.json({ success: true, msg: "You signed up successfully!" });
 
     } catch (err) {
@@ -64,15 +61,18 @@ router.post('/register', async(req, res) => {
 //LOGOUT ROUTE
 router.post('/logout', validateToken, async (req, res) => {
     try {
-        const user_id = req.user.id;
-        if (!req.user.token) {
-            return res.json({ success:true , msg: "you are alradey logout"})
+        const user = req.user
+        if (!user.token) {
+            return res.json({ success:true , msg: "You are already logged out"})
         }
 
-        await pool.query('UPDATE users SET token = NULL WHERE id = $1', [user_id]);
+        await User.update({ token : null }, { where: { id : user.id }})
         return res.json({ success: true, msg: 'Successfully logged out!' });
     } catch (err) {
-        res.status(500).json({ success: false, msg: "Server error", error: err.message });
+        res.status(500).json({ 
+            success: false,
+            msg: "Server error during logout ",
+            error: err.message });
     }
 });
 

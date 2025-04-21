@@ -3,16 +3,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const pool = require('./database/db');
+const sequelize = require('./database/sequelize');
 
 //Checking connection to database
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) {
-      console.error("Database connection error:", err);
-  } else {
-      console.log("Database connected:", res.rows[0]);
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Database connected successfully!");
+  } catch (err) {
+    console.error("Database connection error:", err);
   }
-});
+})();
 
 //Express application
 var app = express();
