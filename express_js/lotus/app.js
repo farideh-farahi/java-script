@@ -27,12 +27,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Importing route
 var authRouter = require('./routes/auth');
 var blogRouter = require('./routes/blogs');
-var blogDetailsRouter = require('./routes/blog_details');
+var likeRouter = require('./routes/like');
+
 
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/blogs', blogRouter);
-app.use('/api/blogs/details', blogDetailsRouter);
+app.use('/api/like', likeRouter);
+
 
 // Catch 404 
 app.use(function(req, res, next) {

@@ -56,9 +56,9 @@ router.post('/register', async(req, res) => {
 
         return res.json({ success: true, msg: "You signed up successfully!" });
 
-    } catch (error) {
+    } catch (err) {
         console.error("Error inserting user:", error);
-        res.status(500).json({ success: false, msg: "Server error", error: error.message });
+        res.status(500).json({ success: false, msg: "Server error", error: err.message });
     }
 });
 
