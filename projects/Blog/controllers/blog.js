@@ -3,7 +3,10 @@ const {User, Blog} = require("../models")
 //ROUTE FOR SHOWING ALL BLOGS TO EVERY USER
 const getAllBlogs = async (req, res) => {
  try{
-    const blogs = await Blog.findAll({where : {is_active: true}})
+    const blogs = await Blog.findAll({
+      where : { is_active: true },
+      include: [{ model:User , attributes: ["username", "email"]}]
+   })
     if (!blogs || blogs.length === 0) {
       return res.status(200).json({ success: true, msg: "No blogs found" });
   }
@@ -18,8 +21,10 @@ const getAllBlogs = async (req, res) => {
 const getUserBlogs = async (req, res) => {
    try{
       const blogs = await Blog.findAll({
-         where : {writer : req.user.id, is_active: true},
-         order: [["id", 'DESC']]
+         where : {writer : req.user.id},
+         order: [["id", 'DESC']],
+         include: [{ model:User , attributes: ["username", "email"]}]
+
       })
 
       if(blogs.length === 0){
@@ -54,7 +59,7 @@ const createBlog = async (req, res) => {
    try{
    const blog = await Blog.findOne({
       where: {id: req.params.id, writer: req.user.id, is_active: true},
-      include: [{ model: User, attributes: ["username"] }]
+      include: [{ model: User, attributes: ["username", "email"] }]
    })
    if (!blog) {
       return res.status(404).json({ success: false, msg: "Blog not found or you do not have access to this blog" });
@@ -88,6 +93,21 @@ const updateBlog = async (req, res) => {
      res.status(500).json({ success: false, msg: "Server error while updating blog", error: err.message });
    }
  };
+//ROUTE FOR DELETING BLOG BY color-interpolation-filters: 
+const deleteBlog = async (req, res) => {
+   const blog_id = req.params.id;
 
+   try{
+      const blog = await Blog.findOne({where: {id: blog_id}})
+      if(!blog){
+         res.status(404).json({success: false, msg:"Blog not found or you do not have permission to delete this blog"})
+      }
+      await blog.destroy();
+      res.json({ success: true, msg: "Blog deleted successfully!" });
 
-module.exports = {getAllBlogs, getUserBlogs, createBlog, getSingleBlog, updateBlog}
+   }catch(err){
+     res.status(500).json({ success: false, msg: "Server error while deleting blog", error: err.message });
+   }
+}
+
+module.exports = {getAllBlogs, getUserBlogs, createBlog, getSingleBlog, updateBlog, deleteBlog}
