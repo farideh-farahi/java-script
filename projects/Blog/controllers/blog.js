@@ -1,4 +1,5 @@
-const {User, Blog} = require("../models")
+const {User, Blog,LikeBlogs ,sequelize} = require("../models");
+
 
 //ROUTE FOR SHOWING ALL BLOGS TO EVERY USER
 const getAllBlogs = async (req, res) => {
@@ -46,7 +47,14 @@ const createBlog = async (req, res) => {
 
    try {
       const writer = req.user.id;
-      const blog = await Blog.create({title, content, writer, is_active})
+
+      const blog = await sequelize.transaction(async (t) => {
+         const newBlog = await Blog.create({ title, content, writer, is_active }, { transaction: t });
+
+         await LikeBlogs.create({ blog_id: newBlog.id, user_id: writer, liked: false }, { transaction: t });
+
+         return newBlog;
+      });
 
       res.json({success: true, msg: "Blog created successfully", blog })
    }catch(err){
