@@ -1,6 +1,6 @@
 const { User, Blog, LikeBlogs, sequelize } = require("../models");
 
-// ✅ Like or Unlike a Blog
+// Like or Unlike a Blog
 const likeBlog = async (req, res) => {
   const { blog_id, like } = req.body;
   const user_id = req.user.id;
@@ -31,27 +31,37 @@ const likeBlog = async (req, res) => {
   }
 };
 
-// ✅ Show All Liked Blogs
-const getLikedBlogs = async (req, res) => {
+// Show All Details Blogs
+const getBlogsWithLikes = async (req, res) => {
   try {
-    const likedBlogs = await LikeBlogs.findAll({
+    const blogs = await Blog.findAll({
       attributes: [
-        "blog_id",
-        [sequelize.fn("COUNT", sequelize.col("blog_id")), "like_count"]
+        'id',
+        'title',
+        'content',
+        [sequelize.fn('COUNT', sequelize.col('BlogLikes.blog_id')), 'like_count']
       ],
-      where: { liked: true },
-      group: ["blog_id", "Blog.id"],
-      include: [{ model: Blog, attributes: ["title", "content"] }],
+      group: ["Blog.id", "User.id"],
+      include: [
+        { model: User, attributes: ["username"] },
+        {
+          model: LikeBlogs,
+          as: "BlogLikes",
+          attributes: [],
+          required: false,
+        }
+      ],
     });
 
-    if (likedBlogs.length === 0) {
+    if (blogs.length === 0) {
       return res.status(200).json({ success: true, msg: "No blogs have been liked yet." });
     }
 
-    res.json({ success: true, likedBlogs });
+    res.json({ success: true, blogs });
   } catch (err) {
-    res.status(500).json({ success: false, msg: "Server error while fetching liked blogs", error: err.message });
+    res.status(500).json({ success: false, msg: "Server error while fetching blogs and likes", error: err.message });
   }
 };
 
-module.exports = { likeBlog, getLikedBlogs };
+
+module.exports = { likeBlog, getBlogsWithLikes };

@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     class Blog extends Model {
         static associate(models) {
         Blog.belongsTo(models.User, {foreignKey:'writer', onDelete: 'CASCADE'})
-        Blog.belongsToMany(models.User, {through: "LikeBlogs", foreignKey: "blog_id"})
+        Blog.hasMany(models.LikeBlogs, { foreignKey: "blog_id", as: "BlogLikes" });
+
         }
     }
 
