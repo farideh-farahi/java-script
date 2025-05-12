@@ -34,12 +34,29 @@ const likeBlog = async (req, res) => {
 
 // Show All Details Blogs
 const getBlogsWithLikes = async (req, res) => {
-  const { isLiked, userId } = req.query;
+  const { isLiked, userId, isUser } = req.query;
   try {
     const whereConditions = {};
     if (userId) {
       whereConditions.writer = userId;
     }
+
+    const includeOptions = [
+      {
+        model: LikeBlogs,
+        as: "BlogLikes",
+        attributes: [],
+        required: false
+      },
+    ];
+
+    if (isUser === "true"){
+      includeOptions.push({
+        model: User,
+        attributes: ["username"]
+      })
+    }
+
     const blogs = await Blog.findAll({
       attributes: [
         'id',
@@ -47,18 +64,16 @@ const getBlogsWithLikes = async (req, res) => {
         'content',
         [sequelize.fn("SUM", sequelize.literal('CASE WHEN "BlogLikes"."liked" = true THEN 1 ELSE 0 END')), "like_count"]
       ],
-      group: ["Blog.id", "User.id"],
-      include: [
-        { model: User, attributes: ["username"] },
-        {
-          model: LikeBlogs,
-          as: "BlogLikes",
-          attributes: [],
-          required: false,
-        }
-      ],
+       group: ["Blog.id", ...(isUser === "true" ? ["User.id"] : [])],
+      include: includeOptions,
       where: whereConditions,
-      having: isLiked !== undefined ? sequelize.literal(`SUM(CASE WHEN "BlogLikes"."liked" = true THEN 1 ELSE 0 END) ${isLiked == 1 ? ">" : "="} 0`) : undefined
+      having: isLiked !== undefined 
+      ? sequelize.literal(
+        `SUM(CASE WHEN "BlogLikes"."liked" = true THEN 1 ELSE 0 END) ${
+          isLiked == 1 ? ">" : "="
+        } 0`
+      ) 
+        : undefined
     });
 
     if (blogs.length === 0) {
