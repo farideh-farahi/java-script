@@ -1,7 +1,22 @@
-const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.SECRET_KEY;
 
-function generateToken(userId) {  
-    return `${userId}-${crypto.randomBytes(32).toString("hex")}`;
+function generateToken(user) {
+  console.log("Generating Token for:", user); // ✅ Debugging step
+  if (!user.id) {
+    throw new Error("Missing user ID");
+  }
+  return jwt.sign({ user_id: user.id, username: user.username }, SECRET_KEY, { expiresIn: "10h" });
 }
 
-module.exports = { generateToken };
+function verifyToken(token) {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    console.log("Decoded Token Data:", decoded); // ✅ Debugging step
+    return decoded;
+  } catch (err) {
+    return null;
+  }
+}
+
+module.exports = { generateToken, verifyToken };

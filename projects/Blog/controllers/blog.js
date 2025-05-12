@@ -22,7 +22,7 @@ const getAllBlogs = async (req, res) => {
 const getUserBlogs = async (req, res) => {
    try{
       const blogs = await Blog.findAll({
-         where : {writer : req.user.id},
+         where : {writer : req.user.user_id},
          order: [["id", 'DESC']],
          include: [{ model:User , attributes: ["username", "email"]}]
 
@@ -44,9 +44,9 @@ const createBlog = async (req, res) => {
    if(!title || !content || typeof is_active !== "boolean"){
       return res.status(400).json({ success: false, msg: "Invalid or missing required fields!" });
    }
-
+console.log("Decoded user:", req.user);
    try {
-      const writer = req.user.id;
+      const writer = req.user.user_id;
 
       const blog = await sequelize.transaction(async (t) => {
          const newBlog = await Blog.create({ title, content, writer, is_active }, { transaction: t });
@@ -66,7 +66,7 @@ const createBlog = async (req, res) => {
  const getSingleBlog = async (req, res) => {
    try{
    const blog = await Blog.findOne({
-      where: {id: req.params.id, writer: req.user.id, is_active: true},
+      where: {id: req.params.id, writer: req.user.user_id , is_active: true},
       include: [{ model: User, attributes: ["username", "email"] }]
    })
    if (!blog) {
@@ -88,7 +88,7 @@ const updateBlog = async (req, res) => {
    }
  
    try {
-     const blog = await Blog.findOne({ where: { id: req.params.id, writer: req.user.id } });
+     const blog = await Blog.findOne({ where: { id: req.params.id, writer: req.user.user_id } });
  
      if (!blog) {
        return res.status(403).json({ success: false, msg: "You do not have permission to update this blog" });
@@ -106,10 +106,11 @@ const deleteBlog = async (req, res) => {
    const blog_id = req.params.id;
 
    try{
-      const blog = await Blog.findOne({where: {id: blog_id}})
+      const blog = await Blog.findOne({ where: { id: blog_id, writer: req.user.user_id } });
       if(!blog){
-         res.status(404).json({success: false, msg:"Blog not found or you do not have permission to delete this blog"})
+         return res.status(404).json({success: false, msg:"Blog not found or you do not have permission to delete this blog"})
       }
+
       await blog.destroy();
       res.json({ success: true, msg: "Blog deleted successfully!" });
 

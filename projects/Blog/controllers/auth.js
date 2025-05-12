@@ -1,68 +1,59 @@
-const { User } = require("../models")
-const bcrypt = require("bcrypt")
-const { generateToken } = require("../utils/tokenHelper.js")
+const { User } = require("../models");
+const bcrypt = require("bcrypt");
+const { generateToken } = require("../utils/tokenHelper.js");
 
-//Register User
-const register = async (req, res) => {7
-    const { username, email, password } = req.body
+// Register User
+const register = async (req, res) => {
+    const { username, email, password } = req.body;
 
-    if (!username || !email || !password){
-        return res.status(400).json({success: false, msg: "Missing required field"})
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, msg: "Missing required fields" });
     }
 
-    try{
-        const existingUser = await User.findOne({ where : {email}})
-        if(existingUser){
-            return res.status(409).json({success: false, msg: "This email is already register"})
+    try {
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(409).json({ success: false, msg: "This email is already registered" });
         }
 
-        const hashPassword = await bcrypt.hash(password, 10)
-        const newUser = await User.create({username, email, password: hashPassword})
-        return res.status(201).json({success: true, msg: "User registered successfully"})
+        const hashPassword = await bcrypt.hash(password, 10);
+        await User.create({ username, email, password: hashPassword });
 
-    }catch(err){
-        return res.status(500).json({success: false, msg: "Server error during registration", err})
+        return res.status(201).json({ success: true, msg: "User registered successfully" });
+    } catch (err) {
+        return res.status(500).json({ success: false, msg: "Server error during registration", error: err.message });
     }
-}
-//Login user
+};
 
+// Login User
 const login = async (req, res) => {
-    const {username, password} = req.body
+    const { username, password } = req.body;
 
-    if (!username || !password){
-        return res.status(400).json({success: false, msg: "Missing required field"})
+    if (!username || !password) {
+        return res.status(400).json({ success: false, msg: "Missing required fields" });
     }
-    try{
-        const user = await User.findOne({ where: {username}})
-        if(!user){
-            return res.status(404).json({success:false, msg: "User don't exist"})
-        }
-        
-        const isValid = await bcrypt.compare(password, user.password)
-        if(!isValid){
-            return res.status(401).json({success:false, msg: "Password is wrong"})
+
+    try {
+        const user = await User.findOne({ where: { username } });
+        if (!user) {
+            return res.status(404).json({ success: false, msg: "User doesn't exist" });
         }
 
-        const token = generateToken(user.id)
-        await user.update({ token })
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+            return res.status(401).json({ success: false, msg: "Incorrect password" });
+        }
+        const token = generateToken(user);
+
         return res.json({ success: true, msg: "Login successful", token });
-
-
-    }catch(err){
-        return res.status(500).json({success: false, msg: "Server error during login", err})
+    } catch (err) {
+        return res.status(500).json({ success: false, msg: "Server error during login", error: err.message });
     }
-}
+};
 
-//Logout user
+// Logout User
 const logout = async (req, res) => {
-    try{
-        req.user.update({token: null})
-        return res.status(200).json({success: true, msg: "Logout successful"})
+    return res.status(200).json({ success: true, msg: "Logout successful. Token discarded on the client side." });
+};
 
-    }catch(err){
-        return res.status(500).json({success: false, msg: "Server error during logout", err})
-
-    }
-}
-
-module.exports = {register, login, logout};
+module.exports = { register, login, logout };

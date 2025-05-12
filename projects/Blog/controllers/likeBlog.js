@@ -4,7 +4,7 @@ const { User, Blog, LikeBlogs, sequelize } = require("../models");
 // Like or Unlike a Blog
 const likeBlog = async (req, res) => {
   const { blog_id, like } = req.body;
-  const user_id = req.user.id;
+  const user_id = req.user.user_id;
 
   if (!blog_id || typeof like !== "boolean") {
     return res.status(400).json({ success: false, msg: "Missing or invalid Blog ID and 'like' value" });
@@ -56,6 +56,7 @@ const getBlogsWithLikes = async (req, res) => {
         attributes: ["username"]
       })
     }
+    
 
     const blogs = await Blog.findAll({
       attributes: [
@@ -67,12 +68,10 @@ const getBlogsWithLikes = async (req, res) => {
        group: ["Blog.id", ...(isUser === "true" ? ["User.id"] : [])],
       include: includeOptions,
       where: whereConditions,
-      having: isLiked !== undefined 
-      ? sequelize.literal(
-        `SUM(CASE WHEN "BlogLikes"."liked" = true THEN 1 ELSE 0 END) ${
-          isLiked == 1 ? ">" : "="
-        } 0`
-      ) 
+      having: isLiked === "true" 
+        ? sequelize.literal(`SUM(CASE WHEN "BlogLikes"."liked" = true THEN 1 ELSE 0 END) > 0`)
+        : isLiked === "false"
+        ? sequelize.literal(`SUM(CASE WHEN "BlogLikes"."liked" = true THEN 1 ELSE 0 END) = 0`)
         : undefined
     });
 
