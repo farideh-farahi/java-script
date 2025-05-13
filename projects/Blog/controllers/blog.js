@@ -44,7 +44,7 @@ const createBlog = async (req, res) => {
    if(!title || !content || typeof is_active !== "boolean"){
       return res.status(400).json({ success: false, msg: "Invalid or missing required fields!" });
    }
-console.log("Decoded user:", req.user);
+
    try {
       const writer = req.user.user_id;
 
